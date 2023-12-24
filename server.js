@@ -15,7 +15,7 @@ const uri =
   "mongodb+srv://admin:roottoor@catopia.0ss3vvb.mongodb.net/main?retryWrites=true&w=majority";
 
 mongoose
-  .connect(uri)
+  .connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log("MongoDB connected");
   })
@@ -42,9 +42,9 @@ app.post(
   userController.register
 );
 
-app.get('/catopia/', (req, res) => {
-  res.redirect('http://antskat.github.io/catopia/');
-})
+app.get("/catopia/", (req, res) => {
+  res.redirect("http://antskat.github.io/catopia/");
+});
 
 app.get("/catopia/auth/me", checkAuth, userController.getMe);
 
