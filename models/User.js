@@ -2,24 +2,19 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    userName: {
+    name: {
       type: String,
       required: true,
-      unique: true,
     },
     email: {
       type: String,
+      required: true,
       unique: true,
     },
-    passwordHash: {
+    password: {
       type: String,
       required: true,
     },
-    phone: {
-      type: String,
-      unique: true,
-    },
-    avatarUrl: String,
     isAdmin: {
       type: Boolean,
       default: false,
@@ -29,5 +24,6 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+userSchema.index({ email: 1 }, { unique: true });
 
 export default mongoose.model("User", userSchema);
