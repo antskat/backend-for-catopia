@@ -18,12 +18,14 @@ app.use(cors());
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*'); 
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE'); 
-  res.header('Access-Control-Allow-Headers', 'Content-Type'); 
+  res.header('Access-Control-Allow-Headers', 'Content-Type'); // Разрешенные заголовки
   next();
 });
 
+const uri = "mongodb+srv://admin:roottoor@catopia.0ss3vvb.mongodb.net/main?retryWrites=true&w=majority";
+
 mongoose
-  .connect(process.env.MONGO_DB)
+  .connect(uri)
   .then(() => {
     console.log("MongoDB connected");
   })
@@ -37,15 +39,15 @@ app.listen(process.env.PORT, () => {
 });
 
 app.post(
-  "https://antskat.github.io/backend-for-catopia/login",
+  "/login",
   loginValidation,
   handleValidationErrors,
   userController.login
 );
 app.post(
-  "https://antskat.github.io/backend-for-catopia/register",
+  "/register",
   registerValidation,
   handleValidationErrors,
   userController.register
 );
-app.get("https://antskat.github.io/backend-for-catopia/auth/me", checkAuth, userController.getMe);
+app.get("/auth/me", checkAuth, userController.getMe);
