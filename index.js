@@ -51,3 +51,7 @@ app.post(
   userController.register
 );
 app.get("/auth/me", checkAuth, userController.getMe);
+app.get("/", (req, res) => {
+  console.log("Hello World!");
+  res.send("Hello World!");
+})
