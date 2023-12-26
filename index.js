@@ -37,15 +37,15 @@ app.listen(process.env.PORT, () => {
 });
 
 app.post(
-  "/catopia/login",
+  "https://antskat.github.io/backend-for-catopia/login",
   loginValidation,
   handleValidationErrors,
   userController.login
 );
 app.post(
-  "/catopia/register",
+  "https://antskat.github.io/backend-for-catopia/register",
   registerValidation,
   handleValidationErrors,
   userController.register
 );
-app.get("/catopia/auth/me", checkAuth, userController.getMe);
+app.get("https://antskat.github.io/backend-for-catopia/auth/me", checkAuth, userController.getMe);
