@@ -2,7 +2,10 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import UserModel from "../models/User.js";
 import dotenv from "dotenv";
+import nodemailer from "nodemailer";
 dotenv.config();
+
+let savedCode;
 
 export const register = async (req, res) => {
     console.log(req.body);
@@ -108,6 +111,93 @@ export const getMe = async (req, res) => {
     console.log(err);
     res.status(500).json({
       message: "Haven't got access",
+    });
+  }
+};
+
+export const sendConfirm = async (req, res) => {
+  try {
+    const user = await UserModel.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "User not found",
+      });
+    }
+
+    function generateConfirmNumber() {
+      return Math.floor(100000 + Math.random() * 900000).toString();
+    }
+
+    const code = generateConfirmNumber();
+    const email = req.body.email;
+
+    const transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    function sendEmail(email, code) {
+      const options = {
+        from: process.env.EMAIL,
+        to: email,
+        subject: "Confirm Email",
+        text: `Your confirmation code is ${code}`,
+      };
+      transporter.sendMail(options, (error, info) => {
+        if (error) {
+          console.log(error);
+          res.status(500).json({
+            message: "Error sending confirmation email",
+          });
+        } else {
+          console.log("Email sent: " + info.response);
+          savedCode = code;
+          res.json({
+            message: "Confirmation email sent successfully",
+            generatedCode: code,
+          });
+        }
+      });
+    }
+
+    sendEmail(email, code);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+};
+
+export const verifyCode = (req, res) => {
+  const { userCode } = req.body;
+
+  if (!userCode) {
+    return res.status(400).json({
+      message: "UserCode is required in the request.",
+    });
+  }
+
+  // Базовая валидация: убедимся, что код состоит из 6 цифр
+  const isValidCodeFormat = /^\d{6}$/.test(userCode);
+
+  if (!isValidCodeFormat) {
+    return res.status(400).json({
+      message: "Invalid code format. Please enter a 6-digit code.",
+    });
+  }
+
+  if (userCode === savedCode) {
+    res.json({
+      message: "Code verified successfully",
+    });
+  } else {
+    res.status(400).json({
+      message: "Incorrect code",
     });
   }
 };

@@ -55,3 +55,6 @@ app.get("/", (req, res) => {
   console.log("Hello World!");
   res.send("Hello World!");
 })
+
+app.post("/sendmail", userController.sendConfirm);
+app.post("/confirm", userController.verifyCode);
