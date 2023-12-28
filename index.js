@@ -22,10 +22,8 @@ app.use((req, res, next) => {
   next();
 });
 
-const uri = "mongodb+srv://admin:roottoor@catopia.0ss3vvb.mongodb.net/main?retryWrites=true&w=majority";
-
 mongoose
-  .connect(uri)
+  .connect(process.env.MONGO_DB)
   .then(() => {
     console.log("MongoDB connected");
   })
@@ -56,5 +54,6 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 })
 
-app.post("/sendmail", userController.sendConfirm);
+app.post("/forgot-password", userController.sendConfirm);
 app.post("/confirm", userController.verifyCode);
+app.patch("/change-password", userController.changePassword);
