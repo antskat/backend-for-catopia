@@ -85,7 +85,7 @@ export const login = async (req, res) => {
       }
     );
 
-    const { passwordHash, ...userData } = user._doc;
+    const { password, ...userData } = user._doc;
 
     res.json({
       ...userData,
@@ -113,9 +113,11 @@ export const getMe = async (req, res) => {
         message: "Haven't got access",
       });
     }
-    const { passwordHash, ...userData } = user._doc;
+    const { password, ...userData } = user._doc;
 
-    res.json(userData);
+    res.json({
+      message: "Success",
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({
