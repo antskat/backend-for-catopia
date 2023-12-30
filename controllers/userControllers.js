@@ -112,7 +112,8 @@ export const getMe = async (req, res) => {
     // Перевіряємо, чи є токен у заголовках і чи він співпадає з токеном користувача
     const token = req.header("Authorization");
     if (!token || !token.startsWith("Bearer ") || token.split(" ")[1] !== user.token) {
-      return res.status(403).json({
+      console.log('Token not provided or invalid format');
+      return res.status(401).json({
         message: "User not authorized",
       });
     }
