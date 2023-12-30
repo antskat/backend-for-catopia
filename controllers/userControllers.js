@@ -108,23 +108,18 @@ export const getMe = async (req, res) => {
         message: "User not found",
       });
     }
-
-    // Перевіряємо, чи є токен у заголовках і чи він співпадає з токеном користувача
-    const token = req.header("Authorization");
-    if (!token || !token.startsWith("Bearer ") || token.split(" ")[1] !== user.token) {
-      console.log('Token not provided or invalid format');
-      return res.status(401).json({
-        message: "User not authorized",
+    if (res.status === 403) {
+      return res.status(403).json({
+        message: "Haven't got access",
       });
     }
-
     const { passwordHash, ...userData } = user._doc;
+
     res.json(userData);
-    console.log('User authenticated:', req.userId);
   } catch (err) {
-    console.error(err);
+    console.log(err);
     res.status(500).json({
-      message: "Unable to get user data",
+      message: "Haven't got access",
     });
   }
 };
