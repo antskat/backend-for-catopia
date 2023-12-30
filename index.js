@@ -17,8 +17,8 @@ app.use(cors());
 
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*'); 
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE'); 
-  res.header('Access-Control-Allow-Headers', 'Content-Type'); // Разрешенные заголовки
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS'); 
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
   next();
 });
 
@@ -48,7 +48,7 @@ app.post(
   handleValidationErrors,
   userController.register
 );
-app.get("/auth/me", checkAuth, userController.getMe);
+app.post("/auth/me", checkAuth, userController.getMe);
 app.get("/", (req, res) => {
   console.log("Hello World!");
   res.send("Hello World!");
