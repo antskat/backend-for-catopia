@@ -1,8 +1,11 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import UserModel from "../models/User.js";
 import dotenv from "dotenv";
 import nodemailer from "nodemailer";
+import UserModel from "../models/User.js";
+import { v4 as uuidv4 } from "uuid";
+import fs from "fs";
+import path from "path";
 dotenv.config();
 
 let savedCode;
@@ -135,7 +138,7 @@ export const sendConfirm = async (req, res) => {
         message: "User not found",
       });
     }
-    
+
     userMail = req.body.email;
 
     function generateConfirmNumber() {
@@ -236,11 +239,113 @@ export const changePassword = async (req, res) => {
 
     res.json({
       message: "Password changed successfully",
-    })
+    });
   } catch (err) {
     console.log(err);
     res.status(500).json({
       message: "Cant change password",
     });
+  }
+};
+
+export const uploadAvatar = async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.userId);
+    const fileName = uuidv4() + ".jpg";
+
+    if (!req.files || Object.keys(req.files).length === 0) {
+      return res.status(400).json({ message: "No file provided" });
+    }
+
+    const file = req.files.file;
+
+    const fileExtension = path.extname(file.name).toLowerCase();
+    if (fileExtension !== ".jpg") {
+      return res.status(400).json({ message: "Only .jpg files are allowed" });
+    }
+    const currentDir = path.dirname(new URL(import.meta.url).pathname);
+
+    const filePath = path.resolve(process.env.AVATAR_PATH, fileName);
+
+    file.mv(filePath, (err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Error uploading file" });
+      }
+
+      user.avatar = fileName;
+      user.save();
+
+      return res.json({
+        message: "Avatar uploaded",
+      });
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Can't upload avatar",
+    });
+  }
+};
+
+export const deleteAvatar = async (req, res) => {
+  try {
+    const user = await UserModel.findById(req.userId);
+
+    // Проверяем, есть ли у пользователя аватар
+    if (!user.avatar) {
+      return res.status(404).json({ message: "Avatar not found" });
+    }
+
+    // Путь к файлу аватара
+    const filePath = path.resolve(process.env.AVATAR_PATH, user.avatar);
+
+    // Удаляем файл из папки
+    fs.unlink(filePath, (err) => {
+      if (err) {
+        console.log(err);
+        return res.status(500).json({ message: "Error deleting avatar file" });
+      }
+
+      // Удаляем информацию об аватаре из базы данных
+      user.avatar = null;
+      user.save();
+
+      return res.json({
+        message: "Avatar deleted",
+      });
+    });
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({
+      message: "Can't delete avatar",
+    });
+  }
+};
+
+export const getAvatar = async (req, res) => {
+  try {
+    const token = req.headers.authorization;
+
+    if (!token || !token.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    const tokenWithoutBearer = token.slice(7);
+
+    const decodedToken = jwt.verify(tokenWithoutBearer, process.env.JWT_KEY);
+    console.log(decodedToken);
+
+    const user = await UserModel.findById(decodedToken._id);
+    console.log(user);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.json({ avatar: user.avatar });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "Error retrieving user avatar" });
   }
 };
