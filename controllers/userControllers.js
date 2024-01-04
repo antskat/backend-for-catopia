@@ -265,6 +265,10 @@ export const uploadAvatar = async (req, res) => {
     }
     console.log(process.env.AVATAR_PATH)
 
+    if (!fs.existsSync(process.env.AVATAR_PATH)) {
+      fs.mkdirSync(process.env.AVATAR_PATH);
+    }
+
     const filePath = path.resolve(process.env.AVATAR_PATH, fileName);
     
 
