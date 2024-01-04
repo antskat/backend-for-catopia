@@ -263,10 +263,14 @@ export const uploadAvatar = async (req, res) => {
     if (fileExtension !== ".jpg" && fileExtension !== ".png") {
       return res.status(400).json({ message: "Only .jpg and .png files are allowed" });
     }
+    console.log(process.env.AVATAR_PATH)
 
     const filePath = path.resolve(process.env.AVATAR_PATH, fileName);
+    console.log(filePath)
+    
 
     file.mv(filePath, (err) => {
+      console.log(err, filePath)
       if (err) {
         console.error(err);
         return res.status(500).json({ message: "Error uploading file" });
