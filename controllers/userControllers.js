@@ -266,7 +266,6 @@ export const uploadAvatar = async (req, res) => {
     console.log(process.env.AVATAR_PATH)
 
     const filePath = path.resolve(process.env.AVATAR_PATH, fileName);
-    console.log(filePath)
     
 
     file.mv(filePath, (err) => {
