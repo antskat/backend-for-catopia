@@ -260,8 +260,8 @@ export const uploadAvatar = async (req, res) => {
     const file = req.files.file;
 
     const fileExtension = path.extname(file.name).toLowerCase();
-    if (fileExtension !== ".jpg") {
-      return res.status(400).json({ message: "Only .jpg files are allowed" });
+    if (fileExtension !== ".jpg" || fileExtension !== ".png") {
+      return res.status(400).json({ message: "Only .jpg and .png files are allowed" });
     }
     const currentDir = path.dirname(new URL(import.meta.url).pathname);
 
@@ -292,22 +292,18 @@ export const deleteAvatar = async (req, res) => {
   try {
     const user = await UserModel.findById(req.userId);
 
-    // Проверяем, есть ли у пользователя аватар
     if (!user.avatar) {
       return res.status(404).json({ message: "Avatar not found" });
     }
 
-    // Путь к файлу аватара
     const filePath = path.resolve(process.env.AVATAR_PATH, user.avatar);
 
-    // Удаляем файл из папки
     fs.unlink(filePath, (err) => {
       if (err) {
         console.log(err);
         return res.status(500).json({ message: "Error deleting avatar file" });
       }
 
-      // Удаляем информацию об аватаре из базы данных
       user.avatar = null;
       user.save();
 
