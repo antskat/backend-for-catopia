@@ -256,8 +256,11 @@ export const uploadAvatar = async (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
       return res.status(400).json({ message: "No file provided" });
     }
+    console.log(fileName);
+    console.log(req.files);
 
     const file = req.files.file;
+    console.log(file)
 
     const fileExtension = path.extname(file.name).toLowerCase();
     if (fileExtension !== ".jpg" && fileExtension !== ".png") {
