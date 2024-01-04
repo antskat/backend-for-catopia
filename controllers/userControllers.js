@@ -5,7 +5,7 @@ import nodemailer from "nodemailer";
 import UserModel from "../models/User.js";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
-import path from "path";
+import path, { dirname } from "path";
 dotenv.config();
 
 let savedCode;
@@ -265,7 +265,7 @@ export const uploadAvatar = async (req, res) => {
         .status(400)
         .json({ message: "Only .jpg and .png files are allowed" });
     }
-    const currentDir = __dirname;
+    const currentDir = dirname(fileURLToPath(import.meta.url));
     const filePath = path.resolve(
       currentDir,
       "..",
