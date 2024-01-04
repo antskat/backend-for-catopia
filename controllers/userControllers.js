@@ -260,7 +260,7 @@ export const uploadAvatar = async (req, res) => {
     const file = req.files.file;
 
     const fileExtension = path.extname(file.name).toLowerCase();
-    if (fileExtension !== ".jpg" || fileExtension !== ".png") {
+    if (fileExtension !== ".jpg" && fileExtension !== ".png") {
       return res.status(400).json({ message: "Only .jpg and .png files are allowed" });
     }
     const currentDir = path.dirname(new URL(import.meta.url).pathname);
