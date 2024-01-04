@@ -256,8 +256,6 @@ export const uploadAvatar = async (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
       return res.status(400).json({ message: "No file provided" });
     }
-    console.log(fileName);
-    console.log(req.files);
 
     const file = req.files.file;
 
@@ -266,12 +264,11 @@ export const uploadAvatar = async (req, res) => {
       return res.status(400).json({ message: "Only .jpg and .png files are allowed" });
     }
 
-
-    const filePath = path.resolve(process.env.AVATAR_PATH, fileName.file.name);
+    const filePath = path.resolve(process.env.AVATAR_PATH, fileName);
 
     file.mv(filePath, (err) => {
       if (err) {
-        console.log(err);
+        console.error(err);
         return res.status(500).json({ message: "Error uploading file" });
       }
 
@@ -283,7 +280,7 @@ export const uploadAvatar = async (req, res) => {
       });
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({
       message: "Can't upload avatar",
     });
