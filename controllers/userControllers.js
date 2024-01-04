@@ -10,6 +10,7 @@ dotenv.config();
 
 let savedCode;
 let userMail;
+const AVATAR_PATH = "./uploads/";
 
 export const register = async (req, res) => {
   console.log(req.body);
@@ -256,23 +257,25 @@ export const uploadAvatar = async (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
       return res.status(400).json({ message: "No file provided" });
     }
-    console.log(fileName);
-    console.log(req.files);
+    
 
     const file = req.files.file;
 
     const fileExtension = path.extname(file.name).toLowerCase();
     if (fileExtension !== ".jpg" && fileExtension !== ".png") {
-      return res.status(400).json({ message: "Only .jpg and .png files are allowed" });
+      return res
+        .status(400)
+        .json({ message: "Only .jpg and .png files are allowed" });
     }
-    console.log(fileName.file.name);
+    console.log(AVATAR_PATH);
 
-
-    const filePath = path.resolve(process.env.AVATAR_PATH, fileName.file.name);
+    const filePath = path.resolve(AVATAR_PATH, fileName);
+    console.log(filePath);
 
     file.mv(filePath, (err) => {
+      console.log(err, filePath);
       if (err) {
-        console.log(err);
+        console.error(err);
         return res.status(500).json({ message: "Error uploading file" });
       }
 
@@ -284,7 +287,7 @@ export const uploadAvatar = async (req, res) => {
       });
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     res.status(500).json({
       message: "Can't upload avatar",
     });
@@ -299,7 +302,7 @@ export const deleteAvatar = async (req, res) => {
       return res.status(404).json({ message: "Avatar not found" });
     }
 
-    const filePath = path.resolve(process.env.AVATAR_PATH, user.avatar);
+    const filePath = path.resolve(AVATAR_PATH, user.avatar);
 
     fs.unlink(filePath, (err) => {
       if (err) {
