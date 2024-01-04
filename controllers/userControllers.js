@@ -261,11 +261,17 @@ export const uploadAvatar = async (req, res) => {
 
     const fileExtension = path.extname(file.name).toLowerCase();
     if (fileExtension !== ".jpg" && fileExtension !== ".png") {
-      return res.status(400).json({ message: "Only .jpg and .png files are allowed" });
+      return res
+        .status(400)
+        .json({ message: "Only .jpg and .png files are allowed" });
     }
-    const currentDir = path.dirname(new URL(import.meta.url).pathname);
-
-    const filePath = path.resolve(process.env.AVATAR_PATH, fileName);
+    const currentDir = __dirname;
+    const filePath = path.resolve(
+      currentDir,
+      "..",
+      process.env.AVATAR_PATH,
+      fileName
+    );
 
     file.mv(filePath, (err) => {
       if (err) {
