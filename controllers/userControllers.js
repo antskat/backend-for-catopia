@@ -256,24 +256,23 @@ export const uploadAvatar = async (req, res) => {
     if (!req.files || Object.keys(req.files).length === 0) {
       return res.status(400).json({ message: "No file provided" });
     }
+    const AVATAR_PATH = "./uploads/";
 
     const file = req.files.file;
 
     const fileExtension = path.extname(file.name).toLowerCase();
     if (fileExtension !== ".jpg" && fileExtension !== ".png") {
-      return res.status(400).json({ message: "Only .jpg and .png files are allowed" });
+      return res
+        .status(400)
+        .json({ message: "Only .jpg and .png files are allowed" });
     }
-    console.log(process.env.AVATAR_PATH)
+    console.log(AVATAR_PATH);
 
-    if (!fs.existsSync(process.env.AVATAR_PATH)) {
-      fs.mkdirSync(process.env.AVATAR_PATH);
-    }
-
-    const filePath = path.resolve(process.env.AVATAR_PATH, fileName);
-    
+    const filePath = path.resolve(AVATAR_PATH, fileName);
+    console.log(filePath);
 
     file.mv(filePath, (err) => {
-      console.log(err, filePath)
+      console.log(err, filePath);
       if (err) {
         console.error(err);
         return res.status(500).json({ message: "Error uploading file" });
