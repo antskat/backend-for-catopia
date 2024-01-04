@@ -6,10 +6,12 @@ import UserModel from "../models/User.js";
 import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path, { dirname } from "path";
+import multer from "multer";
 dotenv.config();
 
 let savedCode;
 let userMail;
+const upload = multer({ dest: "uploads/" });
 
 export const register = async (req, res) => {
   console.log(req.body);
@@ -253,25 +255,18 @@ export const uploadAvatar = async (req, res) => {
     const user = await UserModel.findById(req.userId);
     const fileName = uuidv4() + ".jpg";
 
-    if (!req.files || Object.keys(req.files).length === 0) {
+    if (!req.file) {
       return res.status(400).json({ message: "No file provided" });
     }
 
-    const file = req.files.file;
+    const file = req.file;
 
-    const fileExtension = path.extname(file.name).toLowerCase();
+    const fileExtension = path.extname(file.originalname).toLowerCase();
     if (fileExtension !== ".jpg" && fileExtension !== ".png") {
-      return res
-        .status(400)
-        .json({ message: "Only .jpg and .png files are allowed" });
+      return res.status(400).json({ message: "Only .jpg and .png files are allowed" });
     }
-    const currentDir = dirname(fileURLToPath(import.meta.url));
-    const filePath = path.resolve(
-      currentDir,
-      "..",
-      process.env.AVATAR_PATH,
-      fileName
-    );
+
+    const filePath = path.resolve(process.env.AVATAR_PATH, fileName);
 
     file.mv(filePath, (err) => {
       if (err) {
