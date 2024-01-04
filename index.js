@@ -11,7 +11,6 @@ import * as postController from "./controllers/postControllers.js";
 import bodyParser from "body-parser";
 import fileUpload from "express-fileupload";
 import { fileURLToPath } from 'url';
-import multer from "multer";
 
 dotenv.config();
  
@@ -22,13 +21,10 @@ app.use(cors());
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const avatarsPath = path.join(__dirname, 'uploads');
-const upload = multer({ dest: avatarsPath });
-
-app.use('/avatars', express.static(avatarsPath));
+app.use('/uploads', express.static(avatarsPath));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(fileUpload({}));
-app.use(upload.single('file'));
 
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
