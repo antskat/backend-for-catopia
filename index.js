@@ -36,7 +36,7 @@ app.use((req, res, next) => {
   next();
 });
 
-mongoose
+mongoose  
   .connect(process.env.MONGO_DB)
   .then(() => {
     console.log("MongoDB connected");
@@ -80,3 +80,4 @@ app.delete("/post/:postId/delete", checkAuth, postController.deletePost);
 
 app.get("/posts", postController.getPosts);
 app.get("/getAvatar", checkAuth, userController.getAvatar);
+app.get("/getUser", checkAuth, userController.getUser);
